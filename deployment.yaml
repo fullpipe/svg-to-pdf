@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: svg-to-pdf
+  namespace: svg-to-pdf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: svg-to-pdf
+  template:
+    metadata:
+      labels:
+        app: svg-to-pdf
+    spec:
+      containers:
+      - name: svg-to-pdf
+        image: fullpipe/svg-to-pdf:latest
+        imagePullPolicy: Always
+        env:
+        - name: APP_ENV
+          value: prod
+        - name: APP_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: svg-to-pdf-env
+              key: app_secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svg-to-pdf
+  namespace: svg-to-pdf
+spec:
+  ports:
+  - name: http
+    targetPort: 80
+    port: 80
+  selector:
+    app: svg-to-pdf
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/rule-type: "PathPrefixStrip"
+    cert-manager.io/cluster-issuer: letsencrypt
+  name: svg-to-pdf
+  namespace: svg-to-pdf
+spec:
+  rules:
+  - host: svg-to-pdf.fullpipe.dev
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: svg-to-pdf
+          servicePort: 80
+  tls:
+  - hosts:
+    - svg-to-pdf.fullpipe.dev
+    secretName: svg-to-pdf.fullpipe.dev-cert
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: svg-to-pdf.fullpipe.dev-cert
+  namespace: svg-to-pdf
+spec:
+  commonName: svg-to-pdf.fullpipe.dev
+  secretName: svg-to-pdf.fullpipe.dev-cert
+  issuerRef:
+    name: letsencrypt
