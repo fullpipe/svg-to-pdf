@@ -4,17 +4,14 @@ namespace App\Controller;
 
 use App\PdfGenerator;
 use App\ToPdf;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ConvertController extends AbstractController
+class ConvertController
 {
-    /**
-     * @Route("/")
-     */
-    public function index(Request $request, PdfGenerator $generator)
+    #[Route('/')]
+    public function index(Request $request, PdfGenerator $generator): Response
     {
         if ('OPTIONS' === $request->getMethod()) {
             return new Response('', 204, [
@@ -27,7 +24,7 @@ class ConvertController extends AbstractController
             ]);
         }
 
-        //todo: form validation
+        // todo: form validation
         $toPdf = new ToPdf();
         $toPdf->setSvg($request->get('svg'));
         $toPdf->setWidth($request->get('width'));
