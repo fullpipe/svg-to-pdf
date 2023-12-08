@@ -15,6 +15,18 @@
     "dompdf/dompdf": {
         "version": "v0.8.5"
     },
+    "nelmio/cors-bundle": {
+        "version": "2.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "1.5",
+            "ref": "6bea22e6c564fba3a1391615cada1437d0bde39c"
+        },
+        "files": [
+            "config/packages/nelmio_cors.yaml"
+        ]
+    },
     "phenx/php-font-lib": {
         "version": "0.5.1"
     },
